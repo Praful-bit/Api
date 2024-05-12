@@ -1,4 +1,4 @@
-import {useState } from "react";
+import {useEffect, useState } from "react";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +26,9 @@ const cancelRetry = () => {
   setRetryInterval(null);
   setError(null);
 };
+
+useEffect(()=>{fetchData},[])
+
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="text-center">
