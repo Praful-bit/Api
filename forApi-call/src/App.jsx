@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import {useState } from "react";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null);
-
+  const [error, setError] = useState("")
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -11,9 +11,9 @@ function App() {
       const resData = await response.json();
       setData(resData);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      setError("Something went wrong. Retrying...");
     } finally {
-      setIsLoading(false); // Ensure isLoading is set to false regardless of success or failure
+      setIsLoading(false); 
     }
   };
 
@@ -33,7 +33,7 @@ function App() {
             <p className="ml-2 text-gray-500">Loading...</p>
           </div>
         )}
-
+        <p className="text-xl text-center">{error}</p>
         {data && (
           <ul>
             {data.results.map((film) => (
