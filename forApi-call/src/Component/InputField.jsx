@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+/* eslint-disable react/prop-types */
+import  { useState } from "react";
 
 function InputField({ onAdd }) {
   const [title, setTitle] = useState("");
@@ -6,13 +7,12 @@ function InputField({ onAdd }) {
   const [releaseDate, setReleaseDate] = useState("");
 
   const handleAddClick = () => {
-    const newMovieObj = {
+    const movies = {
       title: title,
       openingText: openingText,
       releaseDate: releaseDate,
     };
-    onAdd(newMovieObj);
-    // Clear input fields after adding
+    onAdd(movies);
     setTitle("");
     setOpeningText("");
     setReleaseDate("");

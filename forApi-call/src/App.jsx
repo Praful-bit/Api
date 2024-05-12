@@ -6,20 +6,24 @@ function App() {
   const [retryInterval, setRetryInterval] = useState(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
-  const [movies, setMovies] = useState([]);
+  // const [movies, setMovies] = useState([]);
 
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("https://swapi.dev/api/films");
+      const response = await fetch(
+        "https://react-http-24820-default-rtdb.firebaseio.com/movies.json"
+      );
       const resData = await response.json();
       setData(resData);
+      console.log(resData);
     } catch (error) {
       setError("Something went wrong. Retrying...");
       retryFetch();
     } finally {
       setIsLoading(false);
     }
+    console.log(data);
   };
 
   const retryFetch = () => {
@@ -32,17 +36,40 @@ function App() {
     setError(null);
   };
 
-  const handleAddMovie = (newMovieObj) => {
-    setMovies([...movies, newMovieObj]);
+  const handleAddMovie = async(movies) => {
+    // setMovies([...movies, newMovieObj]);
+   const response = await fetch("https://react-http-24820-default-rtdb.firebaseio.com/movies.json", {
+      method: "POST",
+      body: JSON.stringify(movies),
+      headers:{
+      'Content-type':'application/json'
+      }
+    });
+    const data = await response.json()
+    console.log(data)
   };
+
+  const deleteItemsFromApi =async(moviesId)=>{
+    try {
+     await fetch(
+        `https://react-http-24820-default-rtdb.firebaseio.com/movies/${moviesId}.json`,
+        {
+          method: "DELETE",
+        }
+      );
+    } catch (error) {
+      console.error("Error deleting movie:",);
+    }
+    }
+
 
   useEffect(() => {
     fetchData
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-400 flex flex-col justify-center items-center">
-      <div className="max-w-lg bg-white p-8 rounded-lg shadow-lg">
+    <div className="w-full max-w-screen-xl mx-auto bg-gray-400 flex flex-col justify-center items-center">
+      <div className=" bg-white p-8 rounded-lg shadow-lg w-3/6 max-w-screen-xl mx-auto">
         <h1 className="text-3xl font-bold mb-4">Hello API</h1>
         <InputField onAdd={handleAddMovie} />
         <div>
@@ -52,7 +79,7 @@ function App() {
           >
             Fetch Data
           </button>
-          <ul className="mt-4 text-left">
+          {/* <ul className="mt-4 text-left">
             {movies.map((movie, index) => (
               <li key={index} className="mb-4">
                 <div className="flex flex-col">
@@ -62,7 +89,7 @@ function App() {
                 </div>
               </li>
             ))}
-          </ul>
+          </ul> */}
 
           {isLoading && (
             <div className="mt-4 flex justify-center items-center">
@@ -83,10 +110,17 @@ function App() {
           )}
           {data && (
             <ul className="mt-4">
-              {data.results.map((film) => (
-                <li key={film.episode_id} className="mb-4">
-                  <strong>{film.title}</strong>
-                  <p>{film.opening_crawl}</p>
+              {Object.keys(data).map((movieId) => (
+                <li key={movieId} className="mb-4">
+                  <strong>Title:- {data[movieId].title}</strong>
+                  <p>Opening_Text:- {data[movieId].openingText}</p>
+                  <p>Release_Date:- {data[movieId].releaseDate}</p>
+                  <button
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                    onClick={() => deleteItemsFromApi(movieId)}
+                  >
+                    Delete
+                  </button>
                 </li>
               ))}
             </ul>
