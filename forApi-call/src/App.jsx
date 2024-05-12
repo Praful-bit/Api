@@ -2,6 +2,7 @@ import {useState } from "react";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
+   const [retryInterval, setRetryInterval] = useState(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState("")
   const fetchData = async () => {
@@ -12,11 +13,19 @@ function App() {
       setData(resData);
     } catch (error) {
       setError("Something went wrong. Retrying...");
+      retryFetch()
     } finally {
       setIsLoading(false); 
     }
   };
-
+  const retryFetch = () => {
+    setRetryInterval(setInterval(fetchData, 5000));
+  };
+const cancelRetry = () => {
+  clearInterval(retryInterval);
+  setRetryInterval(null);
+  setError(null);
+};
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="text-center">
@@ -33,7 +42,17 @@ function App() {
             <p className="ml-2 text-gray-500">Loading...</p>
           </div>
         )}
-        <p className="text-xl text-center">{error}</p>
+        {error && (
+          <div className="mt-4">
+            <p className="text-red-500">{error}</p>
+            <button
+              className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              onClick={cancelRetry}
+            >
+              Cancel Retry
+            </button>
+          </div>
+        )}
         {data && (
           <ul>
             {data.results.map((film) => (
